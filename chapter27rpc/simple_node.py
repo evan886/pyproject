@@ -11,7 +11,6 @@ OK = 1
 FAIL = 2
 EMPTY = ''
 
-def
 
 def getPort(url):
     'extracts the port from a URL 用URL中提取端口'
