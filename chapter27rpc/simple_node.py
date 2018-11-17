@@ -13,7 +13,7 @@ EMPTY = ''
 
 
 def getPort(url):
-    'extracts the port from a URL 用URL中提取端口'
+    'extracts the port from a URL 用 在URL中提取端口'
     name = urlparse(url)[1]
     parts = name.split(':')
     return int(parts[-1])
@@ -41,8 +41,10 @@ class Node:
              return self._broadcast(query,history)
      def  hello(self,other):
           """
+look here
+  假设已知的URL的集合叫做known ,hello 方法非常 简单 只是把other加入到self.known 内,other是唯一的参数  一个URL 
           """
-          self.know.add(other)
+          self.known.add(other)
           return OK
      def fetch(self, query,secret):
          """
@@ -88,7 +90,6 @@ def main():
     url,directory, secret = sys.argv[1:]
     n = Node(url,directory,secret)
     n._start()
-
 
 if __name__ == "__main__":
     main()
