@@ -46,8 +46,10 @@ look here
           """
           self.known.add(other)
           return OK
+      
      def fetch(self, query,secret):
          """
+         code, data 是元组 (code,data)
          """
          if secret != self.secret: return FAIL
          code, data = self.query(query)
