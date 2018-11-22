@@ -6,20 +6,34 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from urlparse import urlparse
 import sys
 MAX_HISTORY_LENGTH = 6
-
 OK = 1
 FAIL = 2
 EMPTY = ''
 
-#这个func 我还是不太懂
 def getPort(url):
     """ 
     extracts the port from a URL 用 在URL中提取端口
     https://vimsky.com/article/3522.html Python urlparse函数详解 
     http://blog.51cto.com/yucanghai/1695439 web模块学习-- urlparse
     https://www.cnblogs.com/stemon/p/6602185.html url解析库--urlparse
+    
+    In [5]: url = 'http://localhost:4242'
+In [6]: name = urlparse(url)[1]
+In [7]: print name
+localhost:4242
+In [8]: parts = name.split(':')
+In [9]: parts[-1]
+Out[9]: '4242'
+   #这个func 我还是不太懂 从url中提取端口号 P412 
+ 
+如果 
+    In [10]: name = urlparse(url)
+
+In [11]: print name 
+ParseResult(scheme='http', netloc='localhost:4242', path='', params='', query='', fragment='')
+    
     """
-    name = urlparse(url)[1]  #[1] 要的第二元素  可能是个列表
+    name = urlparse(url)[1]  #[1] 要的第二元素  可能是个列表  localhost:4242
     parts = name.split(':')
     return int(parts[-1])
 
@@ -48,7 +62,7 @@ https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a
 
      def query(self,query,history=[]):
          """
-             查询文件，可能会向其它已知节点请求帮助 将文件作为字符串返回
+             查询文件，可能会向其它已知节点请求帮助 将文件作为字符串返回 ; 历史记录在一开始调用query的时候是空的  所以 是空列表
          """
          code, data = self._handle(query)
          if code == OK:
@@ -61,8 +75,7 @@ https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a
 
      def  hello(self,other):
           """
-            pass
-  假设已知的URL的集合叫做known ,hello 方法非常 简单 只是把other加入到self.known 内,other是唯一的参数  一个URL 
+     假设已知的URL的集合叫做known ,hello 方法非常 简单 只是把other加入到self.known 内,other是唯一的参数  一个URL 
           """
           self.known.add(other) #add() 方法用于给集合添加元素，如果添加的元素在集合中已存在，则不执行任何操作
           return OK
@@ -71,6 +84,7 @@ https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a
          """
          look here 20181120
          code, data 是元组 (code,data)
+         query 的返回值定义为一对元组 
          """
          if secret != self.secret: return FAIL
          code, data = self.query(query)
@@ -88,18 +102,18 @@ https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a
          s = SimpleXMLRPCServer(("",getPort(self.url)),logRequests=False)
          s.register_instance(self)
          s.serve_forever()
-        
      def _handle(self, query):
          """
+         负责查询的内部处理(检查文件是否在于于特定的node 获取数据等等)
          """
          dir = self.dirname
-         name = join(dir,query)
+         name = join(dir,query) #here
          if  not isfile(name): return  FAIL, EMPTY
          return  OK, open(name).read()
 
      def _broadcast(self,query, history):
          """
-         here20181026
+        self.known.copy() self.known的一个副本 不会在迭代过程中修改设置 安全一些地
          """
          for other in self.known.copy():
              if other in history: continue
@@ -121,6 +135,10 @@ if __name__ == "__main__":
     main()
 
 '''
+
+已确定  这个在 listing27-1.py 中通过了 
+
+mkdir  files1 files2 ; touch files2/test.txt
 python simple_node.py  http://localhost:4242 files1 secret1
 
 python simple_node.py  http://localhost:4243 files2 secret2
@@ -133,23 +151,40 @@ python simple_node.py  http://localhost:4243 files2 secret2
 from xmlrpclib import *
 mypeer = ServerProxy('http://localhost:4242')
 code , date = mypeer.query('test.txt')
+
+In [10]: code 
+Out[10]: 1
+
+
+ otherpeer = ServerProxy('http://localhost:4243')
+code, data = otherpeer.query('test.txt') #这个就是查询test.txt
+
+In [10]: code 
+Out[10]: 1
+
+
 code 
-Out[4]: 2
+Out[4]: 2  # touch files2/test.txt 少了这个 
 
 
+In [14]: data
+Out[14]: 'this is a test\\n\n' #要手工添加呀  
 
-In [5]: otherpeer = ServerProxy('http://localhost:4243')
 
-In [6]: code, data = otherpeer.query('test.txt')
+p414 把第一个节点介绍给第二个 
+In [15]: mypeer.hello('http://localhost:4243')
+Out[15]: 1
 
-In [7]: code 
-Out[7]: 2
+In [16]: mypeer.query('test.txt')
+Out[16]: [1, 'this is a test\\n\n']
 
-In [8]: data
-Out[8]: ''
 
-In [9]: mypeer.query('test.txt')
-Out[9]: [2, '']
+p415
+In [17]: mypeer.fetch('test.txt','secret1')
+Out[17]: 1
+
+ ls files1/
+test.txt
 
 
 
