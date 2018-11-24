@@ -1,5 +1,6 @@
 #!/usr/bin/python
 #-*- coding:utf-8 -*-
+# p411 还有要看一下 最好全理解 每行代码 
 from xmlrpclib import ServerProxy
 from os.path import join, isfile
 from SimpleXMLRPCServer import SimpleXMLRPCServer
@@ -13,10 +14,7 @@ EMPTY = ''
 def getPort(url):
     """ 
     extracts the port from a URL 用 在URL中提取端口
-    https://vimsky.com/article/3522.html Python urlparse函数详解 
-    http://blog.51cto.com/yucanghai/1695439 web模块学习-- urlparse
     https://www.cnblogs.com/stemon/p/6602185.html url解析库--urlparse
-    
     In [5]: url = 'http://localhost:4242'
 In [6]: name = urlparse(url)[1]
 In [7]: print name
