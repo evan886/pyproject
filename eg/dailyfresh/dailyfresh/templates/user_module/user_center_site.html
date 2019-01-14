@@ -1,0 +1,66 @@
+{% extends 'base_user_center.html' %}
+{% load staticfiles %}
+{% block topfiles %}
+<script type="text/javascript" src={% static "js/jquery-1.12.4.min.js" %}></script>
+<script type="text/javascript"  src={% static 'js/user_info.js' %}></script>
+<style media="screen">
+    #zip_code_error,#phone_id_error{
+        display: none;
+        color: red;
+    }
+</style>
+{% endblock topfiles %}
+{% block right_content %}
+<div class="right_content clearfix">
+            <!-- <h3 class="common_title2">收货地址</h3> -->
+            <div class="user_info_top">
+                <h3>收货地址</h3>
+                <select class="" name="select_addr">
+                    <option value="0">选择默认地址</option>
+                    <!-- <option value="1"><span>李思(收)</span>&nbsp;&nbsp;<b>北京市 海淀区 东北旺西路8号中关村软件园</b></option> -->
+                    {% for item in addrs %}
+                        <option value="">{{item.recipient_addr}}&nbsp;&nbsp;
+                        {{item.recipient_name}}(收)&nbsp;&nbsp;{{item.recipient_phone}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="site_con">
+                <dl>
+                    <dt>当前地址：</dt>
+                    {% if default_addr == None %}
+                        <!-- <dd>北京市 海淀区 东北旺西路8号中关村软件园 （李思 收） 182****7528</dd> -->
+                        <dd>暂无地址</dd>
+                    {% else %}
+                        <dd>{{default_addr.recipient_addr}}&nbsp;&nbsp;
+                        {{default_addr.recipient_name}}(收)&nbsp;&nbsp;{{default_addr.recipient_phone}}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+            <h3 class="common_title2">编辑地址</h3>
+            <div class="site_con">
+                <form method="post" action="/user/add/address/" id="add_address">
+                    {% csrf_token %}
+                    <div class="form_group">
+                        <label>收件人：</label>
+                        <input type="text" name="recipient_name">
+                    </div>
+                    <div class="form_group form_group2">
+                        <label>详细地址：</label>
+                        <textarea class="site_area" name="recipient_addr"></textarea>
+                    </div>
+                    <div class="form_group">
+                        <label>邮编：</label>
+                        <input type="text" name="zip_code">
+                        <span id="zip_code_error">邮编格式错误</span>
+                    </div>
+                    <div class="form_group">
+                        <label>手机：</label>
+                        <input type="text" name="recipient_phone">
+                        <span id="phone_id_error">手机号格式错误</span>
+                    </div>
+
+                    <input type="submit" name="" value="提交" class="info_submit">
+                </form>
+            </div>
+    </div>
+{% endblock right_content %}
