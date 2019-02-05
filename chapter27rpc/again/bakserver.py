@@ -7,7 +7,7 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from urlparse import urlparse
 import sys
 
-SimpleXMLRPCServer.allow_reuse_address =1 #Reuse: 重复使用  pass 2019年 02月 05日 星期二 21:57:03 CST
+SimpleXMLRPCServer.allow_reuse_address =1
 
 MAX_HISTORY_LENGTH = 6
 
@@ -92,8 +92,7 @@ class Node:
         """
 
         """
-        s = SimpleXMLRPCServer(("", getPort(self.url)), logRequests=False)
-        #s = SimpleXMLRPCServer("",getPort(self.url)),logRequests= False)
+        s = SimpleXMLRPCServer("",getPort(self.url),logRequests= False)
         s.register_instance(self)
         s.serve_forever()
 
@@ -191,21 +190,18 @@ dog.send_msg(100)
 
 
 hello 方法 
+In [11]:      def  hello(other):
+    ...:     
+    ...:           """     假设已知的URL的集合叫做known ,hello 方法非常 简单 只是把other加入到self.known 内,other是唯一的参数  一个URL 
+    ...:     """
+    ...:           known.add(other) #add() 方法用于给集合添加元素，如果添加的元素在集合中已存在，则不执行任何操作
+    ...:  
 
-In [2]: known = set()
-In [3]: def  hello(other):
-   ...:     known.add(other)
-   ...:     
+In [12]:  hello(other)
 
-In [4]: other='b.com'
-In [5]: hello(other)
+In [13]: known
+Out[13]: {'a.com'}
 
-In [6]: known 
-Out[6]: {'b.com'}
-In [7]: other='c.com'
-In [8]: hello(other)
-In [9]: known
-Out[9]: {'b.com', 'c.com'}
 
 '''
                 

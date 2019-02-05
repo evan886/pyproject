@@ -1,0 +1,88 @@
+2019年 01月 31日 星期四 23:01:58 CST
+
+mkdir files1 files2;
+
+cat files1/urls1.txt
+http://localhost:4243
+
+ python  client.py  files1/urls1.txt  files1/    http://localhost:4242
+
+用vimdiff  对比了好几次 才几百行 就错了这么多 以后要小心点才行  呀 
+
+报错其实很友好的 说了是线程问题 那就是在s.regi  什么的前面的(()) 少了啦
+
+这些是解决过程 
+
+为什么运行不了 好像好多人这样呀
+
+
+
+
+2019年 02月 03日 星期日 20:39:55 CST
+
+history =      不太明白这个呢  为什么要这个呢
+
+
+
+
+
+
+在程序初始化的时候，还有一点需要注意，就是它会读取你urlfile参数传递的文件中的数据，这个里面放的是节点的url地址。读取之后程序会把这些地址加到相邻节点中，供以后访问。不过这个程序还有些不完善的地方就是在程序运行时，如果你修改了url配置的文件，他不会读取你新添加的节点url。不过这个修改很简单，把获取url的代码放到do_fetch中就行了。
+
+在运行程序之前还有一些工作要做。 首先需要建立两个文件夹，A和C，C文件夹里面创建一个文件，B.txt，在A和C所在文件夹中建立urlsA.txt和urlsC.txt文件。里面在urlsA.txt中写入：http://localhost:4243，然后开启两个命令行，
+
+第一个输入：python client.py urlsA.txt A http://localhost:4242 回车，是不是出来提示符了。输入fetch B.txt回车，看到提示Couldn't find the file B.txt。
+
+然后在第二个命令行中输入python client.py urlsC.txt C http://localhost:4243回车。同样输入fetch B.txt回车，是不是没反应。说明该文件存在。接在在第一个命令行中再次输入fetch B.txt看，是否还是提示没找到文件，如果你对代码根据我上面的建议进行了修改的话，就不会出现错误了，如果没有修改，此时你需要把输入exit退出程序，再次重启，然后在fetch B.txt,然后到A文件夹下查看一下，看是不是把B.txt下载到你的文件夹中了。
+PS:上面的程序只能传输文本文件，大文件或者其他格式的文件无法传输，刚才研究了一下，使用xmlrpclib这个库中的Binary函数即可，具体使用访问为： 先引入xmlrpclib,import xmlrpclib 在server类的的_handle方法中最后返回的那句代码return open(name).read() 修改为 return xmlrpclib.Binary(open(name,'rb').read()) 再把fetch方法中的f.write(result)修改为f.write(result.data) 另外这句话前面的那个写文件的方式要改为wb。
+
+现在用
+
+python  client.py  files1/urls1.txt  files1/    http://localhost:4242
+
+
+官方 但不可用的方法
+
+listing27-3.py 改名为server1.py 然后 from server1  import Node, UNHANDLED
+再运行就行了
+python listing27-3.py files1/urls1.txt  files1/    http://localhost:4242
+
+> fetch fooo
+Couldn't find the file fooo
+>
+
+
+
+python client.py
+
+
+python client.py  urls.txt  files1/   http://servername.com:4242  
+
+python client.py  urls.txt  ./   http://servername.com:4242
+#python client.py  urls.txt directory http://servername.com:4242
+
+again$ python client.py A/urlsA.txt A http://localhost:4242
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/threading.py", line 801, in __bootstrap_inner
+    self.run()
+  File "/usr/lib/python2.7/threading.py", line 754, in run
+    self.__target(*self.__args, **self.__kwargs)
+  File "/home/evan/github/pyproject/chapter27rpc/again/server.py", line 95, in _start
+    s= SimpleXMLRPCServer("",getPort(self.url),logRequests= False)
+  File "/usr/lib/python2.7/SimpleXMLRPCServer.py", line 593, in __init__
+    SocketServer.TCPServer.__init__(self, addr, requestHandler, bind_and_activate)
+  File "/usr/lib/python2.7/SocketServer.py", line 417, in __init__
+    self.server_bind()
+  File "/usr/lib/python2.7/SocketServer.py", line 431, in server_bind
+    self.socket.bind(self.server_address)
+  File "/usr/lib/python2.7/socket.py", line 228, in meth
+    return getattr(self._sock,name)(*args)
+TypeError: getsockaddrarg: AF_INET address must be tuple, not str
+
+
+在F:\program\pybook\27目录下建立两个文件夹，files1和files2，并在文件夹中分别建立urls1.txt和urls2.txt文件，files2文件夹里面创建一个文件，dict.txt。在urls1.txt中写入：http://localhost:4243，然后开启两个cmd命令行，
+
+url, directory, urlfile
+
+第一个输入：python client.py urls1.txt files1 http://localhost:4242 并回车

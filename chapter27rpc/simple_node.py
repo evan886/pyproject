@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #-*- coding:utf-8 -*- # p411 还有要看一下 最好全理解 每行代码 
 from xmlrpclib import ServerProxy
-from os.path import join, isfile
+from os.path import join, isfile  # 前面模块后面函数名
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from urlparse import urlparse
 import sys
@@ -25,19 +25,18 @@ Out[9]: '4242'
    #这个func 我还是不太懂 从url中提取端口号 P412 
 如果 
     In [10]: name = urlparse(url)
-
 In [11]: print name 
 ParseResult(scheme='http', netloc='localhost:4242', path='', params='', query='', fragment='')
     
     """
-    name = urlparse(url)[1]  #[1] 要的第二元素  可能是个列表  localhost:4242
+    name = urlparse(url)[1]  #  [1] 要的第二元素  可能是个列表  localhost:4242
     parts = name.split(':')
     return int(parts[-1])
 
 class Node:
      """ 
-     p2p网络中的节点
-集合（set）是一个无序的不重复元素序列
+      p2p网络中的节点  
+     集合（set）是一个无序的不重复元素序列  
      http://www.runoob.com/python3/python3-set.html
      https://blog.csdn.net/business122/article/details/7541486
      
@@ -46,6 +45,7 @@ class Node:
 
 https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/0013868193482529754158abf734c00bba97c87f89a263b000
      """
+     #构造函数
      def __init__(self,url,dirname,secret):
          self.url = url
          self.dirname = dirname
@@ -53,7 +53,6 @@ https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a
          self.known = set() # 集合（set）是一个无序的不重复元素序列
 
      def query(self,query,history=[]):
-         print '11111'
          """
              查询文件，可能会向其它已知节点请求帮助 将文件作为字符串返回 ; 历史记录在一开始调用query的时候是空的  所以 是空列表
          """
@@ -63,14 +62,14 @@ https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a
              return code, data
 
          else:
-             #_handle 内部查找不到的情况 
+             #_ here 不全明白 handle 内部查找不到的情况
              history = history + [self.url]
              if len(history) >= MAX_HISTORY_LENGTH:
                  return FAIL, EMPTY
              return self._broadcast(query,history)
 
      def  hello(self,other):
-          """     假设已知的URL的集合叫做known ,hello 方法非常 简单 只是把other加入到self.known 内,other是唯一的参数  一个URL     """
+          """   pass 2019    假设已知的URL的集合叫做known ,hello 方法非常 简单 只是把other加入到self.known 内,other是唯一的参数  一个URL     """
           self.known.add(other) #add() 方法用于给集合添加元素，如果添加的元素在集合中已存在，则不执行任何操作
           return OK
       
@@ -97,19 +96,20 @@ https://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a
          s.serve_forever()
      def _handle(self, query):
          """
-         负责查询的内部处理(检查文件是否在于于特定的node 获取数据等等)
+          pass 2019 负责查询的内部处理(检查文件是否在于于特定的node 获取数据等等)
          """
          dir = self.dirname
          name = join(dir,query)  #here   /home/evan/1.php
-         print name  #here
+         #print name  #here
          if  not isfile(name): return  FAIL, EMPTY
-         return  name,OK, open(name).read()
+         return  OK, open(name).read()
 
      def _broadcast(self,query, history):
          """
          2019here self.url 加入到history   self.known.copy() self.known的一个副本 不会在迭代过程中修改设置 安全一些地
          """
          for other in self.known.copy():
+             # 如果节点出现在history中，那么就会跳到下一个节点 （使用continue ） 为什么跳过呢 here
              if other in history: continue
              try:
                  s = ServerProxy(other)
@@ -128,6 +128,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 """
 In [1]: t=[1,2,3,4]
